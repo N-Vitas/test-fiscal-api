@@ -1,8 +1,8 @@
 package main
 
 import (
-	"test/FiscalTestApi"
 	"fmt"
+	"test-fiscal-api/FiscalTestApi"
 )
 
 type Epocha struct {
@@ -18,16 +18,16 @@ func (s *Epocha) GetCount() int {
 	return s.count
 }
 func main()  {
-	epoha := Epocha{2,10000}
+	epoha := Epocha{5,2500}
 	finish := 0
 	err := 0
 	s := FiscalTestApi.NewApp()
 	//s.ConnectRPC()
 	//go s.PrepareApi(epoha.GetChanelCount(),FiscalTestApi.VITALIY)
 	//go s.PrepareApi(epoha.GetChanelCount(),FiscalTestApi.IRINA)
-	//go s.PrepareApi(epoha.GetChanelCount(),FiscalTestApi.TERMINAL79320)
-	//go s.PrepareApi(epoha.GetChanelCount(),FiscalTestApi.TERMINAL79374)
-	//go s.PrepareApi(epoha.GetChanelCount(),FiscalTestApi.TERMINAL79392)
+	go s.PrepareApi(epoha.GetChanelCount(),FiscalTestApi.TERMINAL79320)
+	go s.PrepareApi(epoha.GetChanelCount(),FiscalTestApi.TERMINAL79374)
+	go s.PrepareApi(epoha.GetChanelCount(),FiscalTestApi.TERMINAL79392)
 	go s.PrepareApi(epoha.GetChanelCount(),FiscalTestApi.TERMINAL79401)
 	go s.PrepareApi(epoha.GetChanelCount(),FiscalTestApi.TERMINAL80064)
 	//defer close(s.Ch)
