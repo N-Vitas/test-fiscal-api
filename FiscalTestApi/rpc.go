@@ -5,12 +5,19 @@ import "math/rand"
 type HeadRPC struct {
 	Header HRpc
 	Operation RPC
+	InfoReq InfoReq
 }
 
 type HRpc struct {
 	Version int64
 	Secret string
 }
+type InfoReq struct {
+	ReqCode int64
+	SysNum int64
+	Receipt string
+}
+
 type RPC struct {
 	OpCode int64
 	AmountCash float64
