@@ -1,20 +1,24 @@
 package FiscalTestApi
 
 import (
-	"net"
-	"log"
-	"os"
 	"encoding/json"
 	"fmt"
+	"log"
+	"net"
+	"os"
 )
 
 type App struct {
-	client net.Conn
-	Payments []PaymentRequest `json:"payments"`
-	Ch chan map[int]int
-	SendJs chan map[string][]byte
-	CountCh chan int
+	client       net.Conn
+	Payments     []PaymentRequest `json:"payments"`
+	Ch           chan map[int]int
+	SendJs       chan map[string][]byte
+	CountCh      chan int
 	CountRequest int
+	receipt      chan interface{}
+	responce     chan []byte
+	rules        []Rules
+	rememer      *Tests
 }
 
 func NewApp() *App {
@@ -25,6 +29,10 @@ func NewApp() *App {
 		make(chan map[string][]byte, 1),
 		make(chan int),
 		0,
+		make(chan interface{}),
+		make(chan []byte),
+		[]Rules{},
+		NewRemember(),
 	}
 }
 
@@ -46,7 +54,7 @@ func (s *App) Prepare(col int) {
 		js, err := json.Marshal(s.generateRPCPayment("Виталий"))
 		fmt.Println(string(js))
 		if err != nil {
-			fmt.Println("Ошибка парсинга Prepare",err)
+			fmt.Println("Ошибка парсинга Prepare", err)
 			continue
 		}
 		s.Send(js)
@@ -55,19 +63,18 @@ func (s *App) Prepare(col int) {
 }
 
 func (s *App) SendRpc(obj interface{}) {
-		js, err := json.Marshal(obj)
-		fmt.Println(string(js))
-		if err != nil {
-			fmt.Println("Ошибка парсинга Prepare",err)
-			return
-		}
-		s.Send(js)
+	js, err := json.Marshal(obj)
+	if err != nil {
+		fmt.Println("Ошибка парсинга Prepare", err)
+		return
+	}
+	s.Send(js)
 }
 
-func (s *App) PrepareApi(col int,token string) {
+func (s *App) PrepareApi(col int, token string) {
 	for i := 0; i < col; i++ {
 		//fmt.Println(i,token)
-		js := s.grouve(i,token)
+		js := s.grouve(i, token)
 		if js != nil {
 			go s.SendApi(js, token)
 			//s.SendJs <- map[string][]byte{token:js}
@@ -77,38 +84,40 @@ func (s *App) PrepareApi(col int,token string) {
 func (s *App) transport(ch map[int]int) {
 	s.Ch <- ch
 }
+
 type A struct {
 	Payments []PaymentRequest `json:"payments"`
 }
-func (s *App) grouve(col int,token string) []byte {
+
+func (s *App) grouve(col int, token string) []byte {
 	a := []PaymentRequest{}
 	amount := s.generateAmount(col, token)
-	a = append(a,s.generatePayment(amount, token))
+	a = append(a, s.generatePayment(amount, token))
 	js, err := json.Marshal(A{a})
 	if err != nil {
-		fmt.Println("Ошибка парсинга Prepare",err)
+		fmt.Println("Ошибка парсинга Prepare", err)
 		return nil
 	}
 	return js
 }
-func (s *App) generateAmount(col int,token string) float64 {
+func (s *App) generateAmount(col int, token string) float64 {
 	switch token {
 	case IRINA:
-		return float64(10+col)
+		return float64(10 + col)
 	case TERMINAL79320:
-		return float64(1+col)
+		return float64(1 + col)
 	case TERMINAL79374:
-		return float64(500+col)
+		return float64(500 + col)
 	case TERMINAL79392:
-		return float64(1000+col)
+		return float64(1000 + col)
 	case TERMINAL79401:
-		return float64(1500+col)
+		return float64(1500 + col)
 	case TERMINAL80064:
-		return float64(2000+col)
+		return float64(2000 + col)
 	}
 	return float64(100)
 }
-func (s *App) Send(resp []byte)  {
+func (s *App) Send(resp []byte) {
 	_, err := s.client.Write(resp)
 	if err != nil {
 		println("Write to server failed:", err.Error())
@@ -117,14 +126,13 @@ func (s *App) Send(resp []byte)  {
 }
 func (s *App) Reader() {
 	for {
-		reply := make([]byte, 1024)
-
-		_, err := s.client.Read(reply)
+		reply := make([]byte, 5000)
+		n, err := s.client.Read(reply)
 		if err != nil {
 			println("Write to server failed:", err.Error())
 			s.client.Close()
 			os.Exit(1)
 		}
-		fmt.Println("Сервер ответил=", string(reply))
+		s.responce <- reply[:n]
 	}
 }

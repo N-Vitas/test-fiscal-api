@@ -1,25 +1,24 @@
 package main
 
 import (
-	//"fmt"
 	//"test-fiscal-api/UpdateFiscalWeb"
 	"test-fiscal-api/FiscalTestApi"
 )
 
 type Epocha struct {
-	ch int
+	ch    int
 	count int
 }
 
 func (s *Epocha) GetChanelCount() int {
-	return s.count/s.ch
+	return s.count / s.ch
 }
 
 func (s *Epocha) GetCount() int {
 	return s.count
 }
-func main()  {
-	epoha := Epocha{1,1}
+func main() {
+	//epoha := Epocha{1,1}
 	//test := UpdateFiscalWeb.New()
 	//test.Start(epoha.GetCount())
 	//fmt.Printf("Результат %d из %d успешны\n",test.GetSuccess(),epoha.GetCount())
@@ -61,8 +60,18 @@ func main()  {
 	//	}
 	//}
 
+	s.LoadRuler()
+	//rule := s.Next()
+	//fmt.Println(rule)
+	//s.Done(rule)
+	//rule = s.Next()
+	//fmt.Println(rule)
+	//s.Done(rule)
+	//rule = s.Next()
+	//fmt.Println(rule)
 	s.ConnectRPC()
 	defer close(s.Ch)
-	s.Prepare(epoha.GetCount())
-	s.Reader()
+	//s.Prepare(epoha.GetCount())
+	go s.Reader()
+	s.Run()
 }
