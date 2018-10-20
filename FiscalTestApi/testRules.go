@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	START_DEMO     = `{"Header":{"Secret":"","Version":1},"Status":{"Code":0,"Message":{"dateCreate":"06.09.2018 18:02:03","fiscalId":199,"login":"demo","name":"Ирина","status":1,"userType":"cashier"}}}`
+	START_DEMO     = `"status":1,"userType":"cashier"`
 	ERR_SECRET     = `{"Header":{"Secret":"","Version":1},"Status":{"Code":1,"Message":"Не верный секретный ключ"}}`
 	ERR_VERSION    = `{"Header":{"Secret":"","Version":1},"Status":{"Code":1,"Message":"Не совподают версии"}}`
 	ERR_HEADER     = `{"Header":{"Secret":"","Version":1},"Status":{"Code":1,"Message":"Отсутствует заголовок"}}`
@@ -28,10 +28,6 @@ const (
 
 func (s *App) checkRule(reply []byte) bool {
 	responce := string(reply)
-	if strings.Index(responce, START_DEMO) != -1 {
-		fmt.Println("START_DEMO OK")
-		return true
-	}
 	if strings.Index(responce, ERR_SECRET) != -1 {
 		fmt.Println("ERR_SECRET OK")
 		return true
@@ -115,6 +111,10 @@ func (s *App) checkRule(reply []byte) bool {
 			fmt.Println("CASH_OUT OK")
 			return true
 		}
+	}
+	if strings.Index(responce, START_DEMO) != -1 {
+		fmt.Println("START_DEMO OK")
+		return true
 	}
 	return false
 }

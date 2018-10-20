@@ -34,7 +34,7 @@ func (s *App) parceResponce(r []byte) {
 		s.Done(rule)
 		return
 	}
-	fmt.Println("Тест провален")
+	fmt.Println("Тест провален", string(r))
 	s.CloseApp()
 }
 
