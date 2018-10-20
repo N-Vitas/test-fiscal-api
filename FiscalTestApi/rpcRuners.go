@@ -35,7 +35,7 @@ func (s *App) parceResponce(r []byte) {
 		return
 	}
 	fmt.Println("Тест провален")
-	os.Exit(1)
+	s.CloseApp()
 }
 
 func (s *App) LoadRuler() {

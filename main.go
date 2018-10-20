@@ -24,7 +24,7 @@ func main() {
 	//fmt.Printf("Результат %d из %d успешны\n",test.GetSuccess(),epoha.GetCount())
 	//fmt.Printf("Результат %d из %d ошибок\n",test.GetError(),epoha.GetCount())
 	s := FiscalTestApi.NewApp()
-
+	defer s.CloseApp()
 	//finish := 0
 	//err := 0
 	//for {

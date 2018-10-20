@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"strings"
 )
 
 type App struct {
@@ -121,7 +122,8 @@ func (s *App) Send(resp []byte) {
 	_, err := s.client.Write(resp)
 	if err != nil {
 		println("Write to server failed:", err.Error())
-		os.Exit(1)
+		s.CloseApp()
+		return
 	}
 }
 func (s *App) Reader() {
@@ -131,8 +133,20 @@ func (s *App) Reader() {
 		if err != nil {
 			println("Write to server failed:", err.Error())
 			s.client.Close()
-			os.Exit(1)
+			s.CloseApp()
+			return
 		}
 		s.responce <- reply[:n]
 	}
+}
+
+func (s *App) CloseApp() {
+	fmt.Println("Тест завершен. Завершить работу Y/N")
+	clos := "Y"
+	fmt.Scan(&clos)
+	if strings.ToUpper(clos) == "Y" {
+		os.Exit(0)
+		return
+	}
+	s.CloseApp()
 }
