@@ -3,6 +3,7 @@ package FiscalTestApi
 import (
 	"fmt"
 	"strings"
+	"encoding/json"
 )
 
 const (
@@ -15,11 +16,14 @@ const (
 	VERSION        = `{"Header":{"Secret":"","Version":1},"Status":{"Code":0,"Message":"Fiscal TCP/IP version 1"}}`
 	SECTION        = `{"Header":{"Secret":"","Version":1},"Status":{"Code":0,"Sections":[{"key":"section1","title":"Без ндс","value":0},{"key":"section2","title":"Секция 1","value":0},{"key":"section3","title":"Секция 2","value":0},{"key":"section4","title":"Секция 3","value":0},{"key":"section5","title":"Секция 4","value":0},{"key":"section6","title":"Секция 5","value":0}]}}`
 	TERMINAL       = `{"Header":{"Secret":"","Version":1},"Status":{"Code":0,"Message":{"AddressCompany":"ул.Чкалова 48, оф.324","AddressPoint":"test address","AddressSupport":"tech address","DataNDS":"082467999","EnableSimRequest":0,"FisCode":1,"IDTerminal":76620,"IdLocation":11,"Iin":150341016439,"IsSystem":0,"Kfu":182,"KsRegister":314,"NameDiler":"TestAgent TOO","NamePoint":"TestTerminal для оплат","Nds":0,"Region":"Петропавловск","Rnm":132465798123,"Rnn":123456789123,"Rnnfil":0,"TaxIDInspection":301,"TelSupport":"tech phone","TerminalAddress":"test address","TerminalName":"TestTerminal для оплат","Version_po":""}}}`
-	PRINT          = `{"Header":{"Secret":"","Version":1},"Status":{"Code":0,"Message":"Печать отправлена на принтер ZJ-58"}}`
-	PAYMENT        = `"Type":3`
-	BUY            = `"Type":4`
-	COMMIT_BUY     = `"Type":5`
-	COMMIT_PAYMENT = `"Type":6`
+	PRINT          = `Печать отправлена на принтер`
+	PAYMENT        = 3
+	BUY            = 4
+	COMMIT_BUY     = 5
+	COMMIT_PAYMENT = 6
+	CASH_IN        = 1
+	CASH_OUT       = 2
+	CLOSEDAY       = `Смена успешно закрыта`
 )
 
 func (s *App) checkRule(reply []byte) bool {
@@ -68,33 +72,58 @@ func (s *App) checkRule(reply []byte) bool {
 		fmt.Println("PRINT OK")
 		return true
 	}
+	if strings.Index(responce, CLOSEDAY) != -1 {
+		fmt.Println("CLOSEDAY OK")
+		return true
+	}
 	if s.rememer.CheckReport(reply) {
 		fmt.Println("XREPORT OK")
 		return true
 	}
-	if strings.Index(responce, PAYMENT) != -1 {
+	if s.getOperation(reply, PAYMENT) {
 		if s.rememer.CheckPayment(reply) {
 			fmt.Println("PAYMENTS OK")
 			return true
 		}
 	}
-	if strings.Index(responce, BUY) != -1 {
+	if s.getOperation(reply, BUY) {
 		if s.rememer.CheckBuy(reply) {
 			fmt.Println("BUY OK")
 			return true
 		}
 	}
-	if strings.Index(responce, COMMIT_PAYMENT) != -1 {
+	if s.getOperation(reply, COMMIT_PAYMENT) {
 		if s.rememer.CheckCommitPayment(reply) {
 			fmt.Println("COMMIT_PAYMENT OK")
 			return true
 		}
 	}
-	if strings.Index(responce, COMMIT_BUY) != -1 {
+	if s.getOperation(reply, COMMIT_BUY) {
 		if s.rememer.CheckCommitBuy(reply) {
 			fmt.Println("COMMIT_BUY OK")
 			return true
 		}
 	}
+	if s.getOperation(reply, CASH_IN) {
+		if s.rememer.CheckCashIn(reply) {
+			fmt.Println("CASH_IN OK")
+			return true
+		}
+	}
+	if s.getOperation(reply, CASH_OUT) {
+		if s.rememer.CheckCashOut(reply) {
+			fmt.Println("CASH_OUT OK")
+			return true
+		}
+	}
 	return false
+}
+
+func (s *App) getOperation(report []byte, operation int64) bool {
+	o := Operation{}
+	if err := json.Unmarshal(report, &o); err != nil {
+		fmt.Println(err)
+		return false
+	}
+	return operation == o.Status.Transaction.Type
 }

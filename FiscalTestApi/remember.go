@@ -17,6 +17,8 @@ type Tests struct {
 	buyStruct           Buy
 	commitPaymentStruct CommitPayment
 	commitBuyStruct     CommitBuy
+	cashInStruct        CashIn
+	cashOutStruct       CashOut
 	SN                  int64
 	Amount              float64
 }
@@ -32,6 +34,8 @@ func NewRemember() *Tests {
 		Buy{},
 		CommitPayment{},
 		CommitBuy{},
+		CashIn{},
+		CashOut{},
 		0,
 		0,
 	}
@@ -55,6 +59,14 @@ func (s *Tests) CheckCommitPayment(report []byte) bool {
 
 func (s *Tests) CheckCommitBuy(report []byte) bool {
 	return s.checkMap(report, s.commitMap) && s.checkCommitBuyData(report)
+}
+
+func (s *Tests) CheckCashIn(report []byte) bool {
+	return s.checkMap(report, s.commitMap) && s.checkCashIn(report)
+}
+
+func (s *Tests) CheckCashOut(report []byte) bool {
+	return s.checkMap(report, s.commitMap) && s.checkCashOut(report)
 }
 
 func (s *Tests) checkMap(report []byte, arr []string) bool {
@@ -124,7 +136,7 @@ func (s *Tests) checkBuyData(report []byte) bool {
 }
 
 func (s *Tests) checkCommitPaymentData(report []byte) bool {
-	if err := json.Unmarshal(report, &s.paymentStruct); err != nil {
+	if err := json.Unmarshal(report, &s.commitPaymentStruct); err != nil {
 		fmt.Println(err)
 		return false
 	}
@@ -147,7 +159,7 @@ func (s *Tests) checkCommitPaymentData(report []byte) bool {
 	return true
 }
 func (s *Tests) checkCommitBuyData(report []byte) bool {
-	if err := json.Unmarshal(report, &s.paymentStruct); err != nil {
+	if err := json.Unmarshal(report, &s.commitBuyStruct); err != nil {
 		fmt.Println(err)
 		return false
 	}
@@ -164,6 +176,52 @@ func (s *Tests) checkCommitBuyData(report []byte) bool {
 		return false
 	}
 	if len(s.commitBuyStruct.Status.Transaction.DateTime) == 0 {
+		fmt.Println("Внимание отсутствует дата регистрации в офд.")
+		return true
+	}
+	return true
+}
+func (s *Tests) checkCashIn(report []byte) bool {
+	if err := json.Unmarshal(report, &s.cashInStruct); err != nil {
+		fmt.Println(err)
+		return false
+	}
+	if s.cashInStruct.Status.Transaction.SysNum == 0 {
+		fmt.Println("Отсутствует номер транзакции")
+		return false
+	}
+	if s.cashInStruct.Status.Transaction.Amount != 100 {
+		fmt.Println("Неверная сумма служебного прихода")
+		return false
+	}
+	if s.cashInStruct.Status.Transaction.Type != 1 {
+		fmt.Println("Не верный тип транзакции")
+		return false
+	}
+	if len(s.cashInStruct.Status.Transaction.DateTime) == 0 {
+		fmt.Println("Внимание отсутствует дата регистрации в офд.")
+		return true
+	}
+	return true
+}
+func (s *Tests) checkCashOut(report []byte) bool {
+	if err := json.Unmarshal(report, &s.cashOutStruct); err != nil {
+		fmt.Println(err)
+		return false
+	}
+	if s.cashOutStruct.Status.Transaction.SysNum == 0 {
+		fmt.Println("Отсутствует номер транзакции")
+		return false
+	}
+	if s.cashOutStruct.Status.Transaction.Amount != 100 {
+		fmt.Println("Неверная сумма служебного расхода")
+		return false
+	}
+	if s.cashOutStruct.Status.Transaction.Type != 2 {
+		fmt.Println("Не верный тип транзакции")
+		return false
+	}
+	if len(s.cashOutStruct.Status.Transaction.DateTime) == 0 {
 		fmt.Println("Внимание отсутствует дата регистрации в офд.")
 		return true
 	}

@@ -17,7 +17,7 @@ func (s *App) Run() {
 		case receipt := <-s.receipt:
 			s.SendRpc(receipt)
 		case responce := <-s.responce:
-			fmt.Println("Server : ", string(responce))
+			//fmt.Println("Server : ", string(responce))
 			go s.parceResponce(responce)
 			//return
 
@@ -39,20 +39,24 @@ func (s *App) parceResponce(r []byte) {
 }
 
 func (s *App) LoadRuler() {
-	s.addRules("login", NewLogin())
-	s.addRules("errSecret", NewErrorSecret())
-	s.addRules("errVersion", NewErrorVersion())
-	s.addRules("errHeader", NewErrorHeader())
-	s.addRules("version", NewVersion())
-	s.addRules("section", NewSection())
-	s.addRules("terminal", NewTerminal())
-	s.addRules("print", NewPrint())
-	s.addRules("casheir", NewCashier())
-	s.addRules("x-report", NewReport())
-	s.addRules("payments", s.NewPayment())
-	s.addRules("buy", s.NewBuy())
-	s.addRules("commitPayment", s.NewCommitPayment())
-	s.addRules("commitBuy", s.NewCommitBuy())
+	s.addRules("LOGIN", NewLogin())
+	s.addRules("ERR_SECRET", NewErrorSecret())
+	s.addRules("ERR_VERSION", NewErrorVersion())
+	s.addRules("ERR_HEADER", NewErrorHeader())
+	s.addRules("VERSION", NewVersion())
+	s.addRules("SECTION", NewSection())
+	s.addRules("TERMINAL", NewTerminal())
+	s.addRules("PRINT", NewPrint())
+	s.addRules("CASHIER", NewCashier())
+	s.addRules("XREPORT", NewReport())
+	s.addRules("CASH_IN", NewCashIn())
+	s.addRules("CASH_OUT", NewCashOut())
+	s.addRules("XREPORT", NewReport())
+	s.addRules("PAYMENT", s.NewPayment())
+	s.addRules("BUY", s.NewBuy())
+	s.addRules("COMMIT_PAYMENT", s.NewCommitPayment())
+	s.addRules("COMMIT_BUY", s.NewCommitBuy())
+	s.addRules("CLOSEDAY", NewCloseDay())
 }
 
 func (s *App) addRules(name string, data interface{}) {
@@ -61,18 +65,18 @@ func (s *App) addRules(name string, data interface{}) {
 
 func (s *App) Next() Rules {
 	for k, rules := range s.rules {
-		if rules.Rule == "commitBuy" {
+		if rules.Rule == "COMMIT_BUY" {
 			buy := s.NewCommitBuy()
-			fmt.Println("BUY DATA", buy)
 			s.rules[k].Data = buy
 			rules.Data = buy
 		}
-		if rules.Rule == "commitPayment" {
+		if rules.Rule == "COMMIT_PAYMENT" {
 			payment := s.NewCommitPayment()
 			s.rules[k].Data = payment
 			rules.Data = payment
 		}
 		if rules.Valid == false {
+			fmt.Println("Тест ", rules.Rule)
 			s.receipt <- rules.Data
 			return rules
 		}
