@@ -12,6 +12,7 @@ type Rules struct {
 }
 
 func (s *App) Run() {
+	s.SendRpc("")
 	for {
 		select {
 		case receipt := <-s.receipt:
@@ -56,7 +57,7 @@ func (s *App) LoadRuler() {
 	s.addRules("BUY", s.NewBuy())
 	s.addRules("COMMIT_PAYMENT", s.NewCommitPayment())
 	s.addRules("COMMIT_BUY", s.NewCommitBuy())
-	s.addRules("CLOSEDAY", NewCloseDay())
+	//s.addRules("CLOSEDAY", NewCloseDay())
 }
 
 func (s *App) addRules(name string, data interface{}) {

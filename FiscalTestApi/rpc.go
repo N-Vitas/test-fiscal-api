@@ -1,6 +1,9 @@
 package FiscalTestApi
 
-import "math/rand"
+import (
+	"math/rand"
+	"time"
+)
 
 type HeadRPC struct {
 	Header    HRpc
@@ -54,6 +57,7 @@ type SysInfo struct {
 }
 
 func (s *App) generateRPCPayment(casher string) HeadRPC {
+	rand.Seed(time.Now().UnixNano())
 	amount := float64(rand.Intn(100))
 	adings := []Article{}
 	adings = append(adings, Article{

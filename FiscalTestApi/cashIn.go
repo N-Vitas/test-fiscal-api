@@ -6,7 +6,7 @@ func NewCashIn() HeadDefRPC {
 		struct {
 			Amount float64
 			OpCode int64
-		}{100, 1},
+		}{100.20, 1},
 	}
 }
 
