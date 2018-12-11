@@ -12,7 +12,7 @@ type Rules struct {
 }
 
 func (s *App) Run() {
-	s.SendRpc("")
+	s.SendRpc(NewLogin())
 	for {
 		select {
 		case receipt := <-s.receipt:
