@@ -19,7 +19,7 @@ type StatusPayment struct {
 type Transaction struct {
 	Amount   float64
 	DateTime string
-	Fiscal   string
+	Fiscal   int64
 	SysNum   int64
 	Type     int64
 }

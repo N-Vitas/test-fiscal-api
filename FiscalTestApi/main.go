@@ -7,6 +7,7 @@ import (
 	"net"
 	"os"
 	"strings"
+	"time"
 )
 
 type App struct {
@@ -64,6 +65,7 @@ func (s *App) Prepare(col int) {
 }
 
 func (s *App) SendRpc(obj interface{}) {
+	time.Sleep(time.Second * 5)
 	js, err := json.Marshal(obj)
 	if err != nil {
 		fmt.Println("Ошибка парсинга Prepare", err)
@@ -87,14 +89,11 @@ func (s *App) transport(ch map[int]int) {
 }
 
 type A struct {
-	Payments []PaymentRequest `json:"payments"`
+	Payments PaymentRequest `json:"payments"`
 }
 
 func (s *App) grouve(col int, token string) []byte {
-	a := []PaymentRequest{}
-	amount := s.generateAmount(col, token)
-	a = append(a, s.generatePayment(amount, token))
-	js, err := json.Marshal(A{a})
+	js, err := json.Marshal(A{s.generatePayment(s.generateAmount(col, token), token)})
 	if err != nil {
 		fmt.Println("Ошибка парсинга Prepare", err)
 		return nil
@@ -107,14 +106,12 @@ func (s *App) generateAmount(col int, token string) float64 {
 		return float64(10 + col)
 	case TERMINAL79320:
 		return float64(1 + col)
-	case TERMINAL79374:
-		return float64(500 + col)
 	case TERMINAL79392:
-		return float64(1000 + col)
+		return float64(500 + col)
 	case TERMINAL79401:
-		return float64(1500 + col)
+		return float64(1000 + col)
 	case TERMINAL80064:
-		return float64(2000 + col)
+		return float64(1500 + col)
 	}
 	return float64(100)
 }
