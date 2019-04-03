@@ -19,7 +19,7 @@ func (s *Epocha) GetCount() int {
 	return s.count
 }
 func main() {
-	epoha := Epocha{4,40}
+	epoha := Epocha{4,8000}
 	//test := UpdateFiscalWeb.New()
 	//test.Start(epoha.GetCount())
 	//fmt.Printf("Результат %d из %d успешны\n",epoha.GetChanelCount(), 40)

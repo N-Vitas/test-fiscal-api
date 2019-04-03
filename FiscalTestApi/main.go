@@ -105,13 +105,13 @@ func (s *App) generateAmount(col int, token string) float64 {
 	case IRINA:
 		return float64(10 + col)
 	case TERMINAL79320:
-		return float64(1 + col)
-	case TERMINAL79392:
-		return float64(500 + col)
-	case TERMINAL79401:
-		return float64(1000 + col)
-	case TERMINAL80064:
 		return float64(1500 + col)
+	case TERMINAL79392:
+		return float64(1000 + col)
+	case TERMINAL79401:
+		return float64(500 + col)
+	case TERMINAL80064:
+		return float64(10 + col)
 	}
 	return float64(100)
 }
