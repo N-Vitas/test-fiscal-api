@@ -4,6 +4,8 @@ import (
 	//"test-fiscal-api/UpdateFiscalWeb"
 	"test-fiscal-api/FiscalTestApi"
 	"fmt"
+	"net/http"
+	_ "net/http/pprof"
 )
 
 type Epocha struct {
@@ -18,7 +20,21 @@ func (s *Epocha) GetChanelCount() int {
 func (s *Epocha) GetCount() int {
 	return s.count
 }
+func cpuhogger() {
+	var acc uint64
+	for {
+		acc += 1
+		if acc&1 == 0 {
+			acc <<= 1
+		}
+	}
+}
+
 func main() {
+	go http.ListenAndServe("0.0.0.0:8082", nil)
+	cpuhogger()
+}
+func mainDeb() {
 	epoha := Epocha{4,8000}
 	//test := UpdateFiscalWeb.New()
 	//test.Start(epoha.GetCount())
