@@ -1,11 +1,10 @@
 package main
 
 import (
+	"fmt"
+	_ "net/http/pprof"
 	//"test-fiscal-api/UpdateFiscalWeb"
 	"test-fiscal-api/FiscalTestApi"
-	"fmt"
-	"net/http"
-	_ "net/http/pprof"
 )
 
 type Epocha struct {
@@ -31,25 +30,46 @@ func cpuhogger() {
 }
 
 func main() {
-	go http.ListenAndServe("0.0.0.0:8082", nil)
-	cpuhogger()
+	// go http.ListenAndServe("0.0.0.0:8082", nil)
+	// cpuhogger()
+	mainDeb()
 }
 func mainDeb() {
-	epoha := Epocha{4,8000}
 	//test := UpdateFiscalWeb.New()
 	//test.Start(epoha.GetCount())
 	//fmt.Printf("Результат %d из %d успешны\n",epoha.GetChanelCount(), 40)
 	s := FiscalTestApi.NewApp()
+	// Проверка нагрузки на апи
+	//TestApi(s)
+
+	s.LoadRuler()
+	//rule := s.Next()
+	//fmt.Println(rule)
+	//s.Done(rule)
+	//rule = s.Next()
+	//fmt.Println(rule)
+	//s.Done(rule)
+	//rule = s.Next()
+	//fmt.Println(rule)
+	s.ConnectRPC()
+	//defer close(s.Ch)
+	go s.Reader()
+	s.StartTestRPC()
+	s.Run()
+}
+
+func TestApi(s *FiscalTestApi.App)  {
+	epoha := Epocha{1,10}
 	defer s.CloseApp()
 	//fmt.Printf("Результат %d из %d ошибок\n",test.GetError(),epoha.GetCount())
 	finish := 0
 	err := 0
 	//go s.PrepareApi(epoha.GetChanelCount(),FiscalTestApi.VITALIY)
-	//go s.PrepareApi(epoha.GetChanelCount(),FiscalTestApi.IRINA)
-	go s.PrepareApi(epoha.GetChanelCount(),FiscalTestApi.TERMINAL79320)
-	go s.PrepareApi(epoha.GetChanelCount(),FiscalTestApi.TERMINAL79392)
-	go s.PrepareApi(epoha.GetChanelCount(),FiscalTestApi.TERMINAL79401)
-	go s.PrepareApi(epoha.GetChanelCount(),FiscalTestApi.TERMINAL80064)
+	go s.PrepareApi(epoha.GetChanelCount(),FiscalTestApi.IRINA)
+	//go s.PrepareApi(epoha.GetChanelCount(),FiscalTestApi.TERMINAL79320)
+	//go s.PrepareApi(epoha.GetChanelCount(),FiscalTestApi.TERMINAL79392)
+	//go s.PrepareApi(epoha.GetChanelCount(),FiscalTestApi.TERMINAL79401)
+	//go s.PrepareApi(epoha.GetChanelCount(),FiscalTestApi.TERMINAL80064)
 	for {
 		select {
 		case maps := <-s.Ch:
@@ -75,19 +95,4 @@ func mainDeb() {
 			return
 		}
 	}
-
-	//s.LoadRuler()
-	////rule := s.Next()
-	////fmt.Println(rule)
-	////s.Done(rule)
-	////rule = s.Next()
-	////fmt.Println(rule)
-	////s.Done(rule)
-	////rule = s.Next()
-	////fmt.Println(rule)
-	//s.ConnectRPC()
-	//defer close(s.Ch)
-	////s.Prepare(epoha.GetCount())
-	//go s.Reader()
-	//s.Run()
 }

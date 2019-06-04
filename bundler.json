@@ -1,0 +1,6 @@
+{
+  "app_name": "Astilectron demo",
+  "icon_path_darwin": "Desktop/resources/icon.icns",
+  "icon_path_linux": "Desktop/resources/icon.png",
+  "icon_path_windows": "Desktop/resources/icon.ico"
+}

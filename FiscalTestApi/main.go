@@ -53,7 +53,7 @@ func (s *App) ConnectRPC() {
 
 func (s *App) Prepare(col int) {
 	for i := 0; i < col; i++ {
-		js, err := json.Marshal(s.generateRPCPayment("Виталий"))
+		js, err := json.Marshal(s.generateRPCPayment("demo"))
 		fmt.Println(string(js))
 		if err != nil {
 			fmt.Println("Ошибка парсинга Prepare", err)
@@ -62,6 +62,16 @@ func (s *App) Prepare(col int) {
 		s.Send(js)
 	}
 	// "{\"payments\":[{\"account\": \"3713443856\",\"idService\": 4064,\"amount\": 20190,\"addings\": [ {\"subservice\": 1, \"constraint\": null,\"amount0\": 0,\"amount1\": 0,\"amount2\": 0,\"comission\": 20190,\"memo\": \"MzcxMzQ0Mzg1Ng==\"}],\"amountTare\": 0,\"amountCard\": 0,\"amountCredit\": 0}]}"
+}
+
+func (s *App) StartTestRPC() {
+		js, err := json.Marshal(s.generateRPCPayment("demo"))
+		fmt.Println(string(js))
+		if err != nil {
+			fmt.Println("Ошибка парсинга Prepare", err)
+			return
+		}
+		s.Send(js)
 }
 
 func (s *App) SendRpc(obj interface{}) {
