@@ -40,7 +40,9 @@ func (s *App) parceResponce(r []byte) {
 }
 
 func (s *App) LoadRuler() {
-	s.addRules("LOGIN", NewLogin())
+	// s.addRules("LOGIN", NewLogin())
+	s.addRules("PAYMENT_NDS", s.NewPaymentNds())
+	s.addRules("PAYMENT_NDS_CARD", s.NewPaymentNdsCard())
 	s.addRules("ERR_SECRET", NewErrorSecret())
 	s.addRules("ERR_VERSION", NewErrorVersion())
 	s.addRules("ERR_HEADER", NewErrorHeader())

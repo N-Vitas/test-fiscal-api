@@ -1,8 +1,22 @@
 package FiscalTestApi
 
+import "fmt"
+
 func (s *App) NewPayment() HeadRPC {
-	payment := s.generateRPCPayment("Ирина")
+	payment := s.generateRPCPayment("Demo")
 	s.rememer.Amount = payment.Operation.AmountCash
+	return payment
+}
+func (s *App) NewPaymentNds() HeadRPC {
+	payment := s.generateRPCPaymentNds()
+	fmt.Printf("NewPaymentNds %v\n", payment)
+	s.rememer.Amount = payment.Operation.AmountCash
+	return payment
+}
+func (s *App) NewPaymentNdsCard() HeadRPC {
+	payment := s.generateRPCPaymentNdsCard()
+	fmt.Printf("NewPaymentNdsCard %v\n", payment)
+	s.rememer.Amount = payment.Operation.AmountCash + payment.Operation.AmountCard
 	return payment
 }
 

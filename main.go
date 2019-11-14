@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	_ "net/http/pprof"
+
 	//"test-fiscal-api/UpdateFiscalWeb"
 	"test-fiscal-api/FiscalTestApi"
 )
@@ -54,18 +55,18 @@ func mainDeb() {
 	s.ConnectRPC()
 	//defer close(s.Ch)
 	go s.Reader()
-	s.StartTestRPC()
+	// s.StartTestRPC()
 	s.Run()
 }
 
-func TestApi(s *FiscalTestApi.App)  {
-	epoha := Epocha{1,10}
+func TestApi(s *FiscalTestApi.App) {
+	epoha := Epocha{1, 10}
 	defer s.CloseApp()
 	//fmt.Printf("Результат %d из %d ошибок\n",test.GetError(),epoha.GetCount())
 	finish := 0
 	err := 0
 	//go s.PrepareApi(epoha.GetChanelCount(),FiscalTestApi.VITALIY)
-	go s.PrepareApi(epoha.GetChanelCount(),FiscalTestApi.IRINA)
+	go s.PrepareApi(epoha.GetChanelCount(), FiscalTestApi.IRINA)
 	//go s.PrepareApi(epoha.GetChanelCount(),FiscalTestApi.TERMINAL79320)
 	//go s.PrepareApi(epoha.GetChanelCount(),FiscalTestApi.TERMINAL79392)
 	//go s.PrepareApi(epoha.GetChanelCount(),FiscalTestApi.TERMINAL79401)
@@ -76,10 +77,10 @@ func TestApi(s *FiscalTestApi.App)  {
 			for sn, term := range maps {
 				if term != 1 {
 					finish++
-					fmt.Printf("Результат %d из %d. SN %d\n", finish,epoha.GetCount(),sn)
+					fmt.Printf("Результат %d из %d. SN %d\n", finish, epoha.GetCount(), sn)
 				} else {
 					err++
-					fmt.Printf("Ошибки %d из %d\n", err,epoha.GetCount())
+					fmt.Printf("Ошибки %d из %d\n", err, epoha.GetCount())
 				}
 			}
 		case maps2 := <-s.SendJs:
@@ -89,9 +90,9 @@ func TestApi(s *FiscalTestApi.App)  {
 
 		case <-s.CountCh:
 			s.CountRequest++
-			fmt.Println("Отправка запроса ",s.CountRequest)
+			fmt.Println("Отправка запроса ", s.CountRequest)
 		}
-		if finish + err >= epoha.GetCount() {
+		if finish+err >= epoha.GetCount() {
 			return
 		}
 	}

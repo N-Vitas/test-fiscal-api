@@ -1,9 +1,9 @@
 package FiscalTestApi
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
-	"encoding/json"
 )
 
 const (
@@ -13,20 +13,22 @@ const (
 	ERR_HEADER     = `{"Header":{"Secret":"","Version":1},"Status":{"Code":1,"Message":"Отсутствует заголовок"}}`
 	START_NOCASHER = `{"Header":{"Secret":"","Version":1},"Status":{"Code":1,"Message":"Пожалуйста авторизируйтесь в приложении"}}`
 	//LOGIN          = `{"Header":{"Secret":"","Version":1},"Status":{"Code":0,"Message":{"dateCreate":"06.09.2018 18:02:03","fiscalId":199,"login":"demo","name":"Ирина","status":1}}}`
-	LOGIN = `{"Header":{"Secret":"","Version":1},"Status":{"Code":0,"Message":{"dateCreate":"06.09.2018 18:02:03","fiscalId":199,"login":"demo","name":"Ирина","status":1}}}`
-	VERSION        = `{"Header":{"Secret":"","Version":1},"Status":{"Code":0,"Message":"Fiscal TCP/IP version 1"}}`
+	LOGIN   = `{"Header":{"Secret":"","Version":1},"Status":{"Code":0,"Message":{"dateCreate":"03.03.2017 11:33:36","fiscalId":18,"login":"demo","name":"Demo","status":1}}}`
+	VERSION = `{"Header":{"Secret":"","Version":1},"Status":{"Code":0,"Message":"Fiscal TCP/IP version 1"}}`
 	//SECTION        = `{"Header":{"Secret":"","Version":1},"Status":{"Code":0,"Sections":[{"key":"section1","title":"Без ндс","value":0},{"key":"section2","title":"Секция 1","value":0},{"key":"section3","title":"Секция 2","value":0},{"key":"section4","title":"Секция 3","value":0},{"key":"section5","title":"Секция 4","value":0},{"key":"section6","title":"Секция 5","value":0}]}}`
 	SECTION = `{"Header":{"Secret":"","Version":1},"Status":{"Code":0,"Sections":[{"key":"section1","title":"Без ндс","value":0},{"key":"section2","title":"Секция 1","value":12},{"key":"section3","title":"Секция 2","value":0},{"key":"section4","title":"Секция 3","value":0},{"key":"section5","title":"Секция 4","value":0},{"key":"section6","title":"Секция 5","value":0}]}}`
 	//TERMINAL       = `{"Header":{"Secret":"","Version":1},"Status":{"Code":0,"Message":{"AddressCompany":"ул.Чкалова 48, оф.324","AddressPoint":"test address","AddressSupport":"tech address","DataNDS":"082467999","EnableSimRequest":0,"FisCode":1,"IDTerminal":76620,"IdLocation":11,"Iin":150341016439,"IsSystem":0,"Kfu":182,"KsRegister":314,"NameDiler":"TestAgent TOO","NamePoint":"TestTerminal для оплат","Nds":0,"Region":"Петропавловск","Rnm":132465798123,"Rnn":123456789123,"Rnnfil":0,"TaxIDInspection":301,"TelSupport":"tech phone","TerminalAddress":"test address","TerminalName":"TestTerminal для оплат","Version_po":""}}}`
-	TERMINAL = `{"Header":{"Secret":"","Version":1},"Status":{"Code":0,"Message":{"AddressCompany":"ул.Чкалова 48, оф.324","AddressPoint":"test address","AddressSupport":"tech address","DataNDS":"082467999","EnableSimRequest":0,"FisCode":1,"IDTerminal":76620,"IdLocation":11,"Iin":150341016439,"IsSystem":0,"Kfu":182,"KsRegister":314,"NameDiler":"TestAgent TOO","NamePoint":"TestTerminal для оплат","Nds":0,"Region":"Петропавловск","Rnm":639536395363,"Rnn":123456789123,"Rnnfil":0,"TaxIDInspection":301,"TelSupport":"tech phone","TerminalAddress":"test address","TerminalName":"TestTerminal для оплат","Version_po":"lotomatic"}}}`
-	PRINT          = `Печать отправлена на принтер`
-	PAYMENT        = 3
-	BUY            = 4
-	COMMIT_BUY     = 5
-	COMMIT_PAYMENT = 6
-	CASH_IN        = 1
-	CASH_OUT       = 2
-	CLOSEDAY       = `Смена успешно закрыта`
+	TERMINAL         = `{"Header":{"Secret":"","Version":1},"Status":{"Code":0,"Message":{"AddressCompany":"ул.Чкалова 48, оф.324","AddressPoint":"г. Алматы, ул. Мустафы Озтюрка, 7","AddressSupport":"support address","DataNDS":"082467999","EnableSimRequest":0,"FisCode":1,"IDTerminal":1069,"IdLocation":18,"Iin":150341016439,"IsSystem":0,"Kfu":182,"KsRegister":314,"NameDiler":"TestAgent TOO","NamePoint":"TestWin","Nds":12,"Region":"Петропавловск","Rnm":639536395363,"Rnn":123456789123,"Rnnfil":0,"TaxIDInspection":4814,"TelSupport":"support phone","TerminalAddress":"г. Алматы, ул. Мустафы Озтюрка, 7","TerminalName":"TestWin","Version_po":"LAS"}}}`
+	PRINT            = `Печать отправлена на принтер`
+	PAYMENT          = 3
+	PAYMENT_NDS      = 3
+	PAYMENT_NDS_CARD = 3
+	BUY              = 4
+	COMMIT_BUY       = 5
+	COMMIT_PAYMENT   = 6
+	CASH_IN          = 1
+	CASH_OUT         = 2
+	CLOSEDAY         = `Смена успешно закрыта`
 )
 
 func (s *App) checkRule(reply []byte) bool {
@@ -82,6 +84,18 @@ func (s *App) checkRule(reply []byte) bool {
 	if s.getOperation(reply, PAYMENT) {
 		if s.rememer.CheckPayment(reply) {
 			fmt.Println("PAYMENTS OK")
+			return true
+		}
+	}
+	if s.getOperation(reply, PAYMENT_NDS) {
+		if s.rememer.CheckPayment(reply) {
+			fmt.Println("PAYMENT_NDS OK")
+			return true
+		}
+	}
+	if s.getOperation(reply, PAYMENT_NDS_CARD) {
+		if s.rememer.CheckPayment(reply) {
+			fmt.Println("PAYMENT_NDS_CARD OK")
 			return true
 		}
 	}
